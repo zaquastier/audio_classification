@@ -1,0 +1,7 @@
+*.tgz
+
+UrbanSound8K/
+models/
+.venv/
+__pycache__/
+# test_files/
