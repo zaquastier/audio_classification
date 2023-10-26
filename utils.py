@@ -23,18 +23,25 @@ class AudioDataTrainGenerator(keras.utils.Sequence):
         return math.ceil(len(self.filepaths) / self.batch_size)
 
     def __getitem__(self, index):
-        print(self.indices)
         batch_indexes = self.indices[index*self.batch_size:(index+1)*self.batch_size]
         filepaths_batch = self.filepaths[batch_indexes]
         
         X_batch = []
         y_batch = self.labels[batch_indexes]
 
-        for filepath in filepaths_batch:
+        for i, filepath in enumerate(filepaths_batch):
             audio_data = open_file(filepath, duration=self.duration)
-            audio_data = time_augmentation(audio_data, duration=self.duration)
+            # audio_data = time_augmentation(audio_data, duration=self.duration)
             sgram = mel_spectrogram(audio_data)
-            sgram = frequency_augmentation(sgram)
+            # sgram = frequency_augmentation(sgram)
+
+            # print(f"class {y_batch[i]}, filename {filepath}")
+
+            # import librosa
+            # librosa.display.specshow(sgram, x_axis='time', y_axis='mel')
+            # plt.title(y_batch[i])
+            # plt.show()
+
 
             X_batch.append(sgram)
         X_batch = np.array(X_batch)

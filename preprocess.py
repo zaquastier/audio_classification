@@ -26,7 +26,7 @@ def frequency_augmentation(x):
     return x
 
 def mel_spectrogram(sig, sr=SR):
-    S = librosa.feature.melspectrogram(y=sig, sr=sr)
+    S = librosa.feature.melspectrogram(y=sig, sr=sr, n_fft=N_FFT, n_mels=N_MELS)
     S_dB = librosa.power_to_db(S, ref=np.max)
     return S_dB
 

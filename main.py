@@ -21,13 +21,13 @@ if __name__ == '__main__':
 
     models = {'model_1': create_cnn_model_v1}
 
-    # epochs = [5, 10, 15, 20]
-    # batch_sizes = [16, 32, 64, 128]
-    # durations = [1.0, 1.5, 2.0, 3.0, 4.0]
+    epochs = [5, 10, 15, 20]
+    batch_sizes = [8, 16, 32, 64, 128]
+    durations = [1.0, 1.5, 2.0, 3.0, 4.0]
 
-    epochs = [5]
-    batch_sizes = [16, 32, 64, 128]
-    durations = [1.5]
+    # epochs = [5]
+    # batch_sizes = [8, 16, 32, 64, 128]
+    # durations = [1.5]
 
     # simple train test split
     train_data, test_data, train_labels, test_labels = train_test_split(filepaths, audio_class, test_size=0.2)
