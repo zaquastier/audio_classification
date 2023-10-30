@@ -27,7 +27,7 @@ def confusion_matrix(y_true, y_pred, labels):
     return np.array(conf_matrix)
 
 if __name__ == '__main__':
-    model = keras.models.load_model('test.h5')
+    model = keras.models.load_model('model_1_epoch_15_batch_size_128_duration_3.0.h5')
 
     classes = np.array([
         "air_conditioner", 
@@ -47,16 +47,13 @@ if __name__ == '__main__':
     results = []
     for i, row in dataset_df.iterrows():
         filepath = os.path.join('UrbanSound8K/audio', 'fold'+str(row['fold']), row['slice_file_name'])
-        file = open_file(filepath)
+        file = open_file(filepath, duration=3.0)
         sgram = mel_spectrogram(file)
         sgram = tf.convert_to_tensor([sgram])
         sgram = tf.expand_dims(sgram, axis=-1)
         res = model(sgram)
         results.append(res[0])
 
-        pred = np.argmax(res[0])
-        if(pred != int(row['classID'])):
-            print(f"predicted: {classes[pred]}, true: {row['class']}, file:{filepath}")
 
     results = np.array(results)
     results = logits_to_categorical(results)
