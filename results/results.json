@@ -1,0 +1,22 @@
+{
+    "experiment": [
+        {
+            "model_name": "model_1",
+            "number_of_epochs": 1,
+            "batch_size": 128,
+            "duration": 0.5,
+            "train_accuracy": [
+                0.12025769799947739
+            ],
+            "test_accuracy": [
+                0.1333714872598648
+            ],
+            "train_loss": [
+                2.7729361057281494
+            ],
+            "test_loss": [
+                2.291916608810425
+            ]
+        }
+    ]
+}

@@ -4,4 +4,9 @@ UrbanSound8K/
 models/
 .venv/
 __pycache__/
-# test_files/
+test_files/
+trash
+experiment_results
+
+notes.txt
+test.py
