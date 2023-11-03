@@ -8,6 +8,8 @@ from sklearn.model_selection import train_test_split
 from tqdm import tqdm 
 import argparse
 import json
+from datetime import datetime
+
 
 available_models = {'model_1': create_cnn_model_v1, 'model_2': create_cnn_model_v1}
 
@@ -60,7 +62,7 @@ if __name__ == '__main__':
                 print(f"Batch size: {batch_size}")
 
                 for duration in tqdm(durations):
-                    print(f"File duration: {duration}")
+                    print(f"\nFile duration: {duration}")
 
                     train_gen = AudioDataTrainGenerator(train_data, train_labels, train_idx, batch_size=batch_size, duration=duration)
                     val_gen = AudioDataTestGenerator(test_data, test_labels, val_idx, batch_size=batch_size, duration=duration)
@@ -84,6 +86,8 @@ if __name__ == '__main__':
 
     json_object = json.dumps(results_json, indent=4)
 
-    with open("results.json", "w") as res:
+    timestamp = datetime.now().strftime('%Y%m%d')
+
+    with open(f"results_{timestamp}.json", "w") as res:
         res.write(json_object)
         

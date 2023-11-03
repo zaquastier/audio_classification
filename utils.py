@@ -31,17 +31,9 @@ class AudioDataTrainGenerator(keras.utils.Sequence):
 
         for i, filepath in enumerate(filepaths_batch):
             audio_data = open_file(filepath, duration=self.duration)
-            # audio_data = time_augmentation(audio_data, duration=self.duration)
+            audio_data = time_augmentation(audio_data, duration=self.duration)
             sgram = mel_spectrogram(audio_data)
-            # sgram = frequency_augmentation(sgram)
-
-            # print(f"class {y_batch[i]}, filename {filepath}")
-
-            # import librosa
-            # librosa.display.specshow(sgram, x_axis='time', y_axis='mel')
-            # plt.title(y_batch[i])
-            # plt.show()
-
+            sgram = frequency_augmentation(sgram)
 
             X_batch.append(sgram)
         X_batch = np.array(X_batch)
