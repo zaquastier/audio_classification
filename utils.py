@@ -6,7 +6,7 @@ import keras
 #do test as well without augmentation
 class AudioDataTrainGenerator(keras.utils.Sequence):
     'Generates data for Keras'
-    def __init__(self, filepaths, labels, indices, batch_size=32, n_classes=10, duration=DURATION, shuffle=True):
+    def __init__(self, filepaths, labels, indices, batch_size=32, n_classes=10, duration=DURATION, shuffle=True, time_augment=False, freq_augment=False):
         self.batch_size = batch_size
         self.labels = np.array([labels[i] for i in indices])
         self.filepaths = np.array([filepaths[i] for i in indices])
@@ -17,7 +17,8 @@ class AudioDataTrainGenerator(keras.utils.Sequence):
         self.shuffle = shuffle
         self.on_epoch_end()
         self.duration = duration
-
+        self.time_augment = time_augment
+        self.freq_augment = freq_augment
 
     def __len__(self):
         return math.ceil(len(self.filepaths) / self.batch_size)
@@ -31,9 +32,12 @@ class AudioDataTrainGenerator(keras.utils.Sequence):
 
         for i, filepath in enumerate(filepaths_batch):
             audio_data = open_file(filepath, duration=self.duration)
-            audio_data = time_augmentation(audio_data, duration=self.duration)
+
+            if(self.time_augment):
+                audio_data = time_augmentation(audio_data, duration=self.duration)
             sgram = mel_spectrogram(audio_data)
-            sgram = frequency_augmentation(sgram)
+            if(self.freq_augment):
+                sgram = frequency_augmentation(sgram)
 
             X_batch.append(sgram)
         X_batch = np.array(X_batch)

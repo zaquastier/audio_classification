@@ -73,7 +73,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Load JSON data
-    with open('results/results.json', 'r') as f:
+    with open('results/experiment_20231026.json', 'r') as f:
         data = json.load(f)
 
     number_of_epochs = 'all' if args.number_of_epochs == 'all' else [epoch for epoch in args.number_of_epochs.split(',')]

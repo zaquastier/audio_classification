@@ -11,7 +11,7 @@ import json
 from datetime import datetime
 
 
-available_models = {'model_1': create_cnn_model_v1, 'model_2': create_cnn_model_v1}
+available_models = {'model_1': create_cnn_model_v1, 'model_2': create_cnn_model_v2}
 
 if __name__ == '__main__':
     
@@ -64,7 +64,59 @@ if __name__ == '__main__':
                 for duration in tqdm(durations):
                     print(f"\nFile duration: {duration}")
 
-                    train_gen = AudioDataTrainGenerator(train_data, train_labels, train_idx, batch_size=batch_size, duration=duration)
+                    # # no aug
+                    # print("no aug")
+
+                    # train_gen = AudioDataTrainGenerator(train_data, train_labels, train_idx, batch_size=batch_size, duration=duration, time_augment=False, freq_augment=False)
+                    # val_gen = AudioDataTestGenerator(test_data, test_labels, val_idx, batch_size=batch_size, duration=duration)
+                    # model = model_function(duration=duration)
+                    # history = model.fit(train_gen, validation_data=val_gen, epochs=epoch, verbose=1, shuffle=False)
+
+                    # experiment = {
+                    #     "model_name": name,
+                    #     "number_of_epochs": epoch,
+                    #     "batch_size": batch_size,
+                    #     "duration": duration,
+                    #     "time_augment": "False",
+                    #     "freq_augment": "False",
+                    #     "train_accuracy": history.history['accuracy'],
+                    #     "test_accuracy": history.history['val_accuracy'],
+                    #     "train_loss": history.history['loss'],
+                    #     "test_loss": history.history['val_loss']
+                    # }
+
+                    # results_json['experiment'].append(experiment)
+
+                    # model.save(f"{name}_epoch_{epoch}_batch_size_{batch_size}_duration_{duration}.h5")
+
+                    # # freq aug
+                    # print("freq_aug")
+                    # train_gen = AudioDataTrainGenerator(train_data, train_labels, train_idx, batch_size=batch_size, duration=duration, time_augment=False, freq_augment=True)
+                    # val_gen = AudioDataTestGenerator(test_data, test_labels, val_idx, batch_size=batch_size, duration=duration)
+                    # model = model_function(duration=duration)
+                    # history = model.fit(train_gen, validation_data=val_gen, epochs=epoch, verbose=1, shuffle=False)
+
+                    # experiment = {
+                    #     "model_name": name,
+                    #     "number_of_epochs": epoch,
+                    #     "batch_size": batch_size,
+                    #     "duration": duration,
+                    #     "time_augment": "False",
+                    #     "freq_augment": "True",
+                    #     "train_accuracy": history.history['accuracy'],
+                    #     "test_accuracy": history.history['val_accuracy'],
+                    #     "train_loss": history.history['loss'],
+                    #     "test_loss": history.history['val_loss']
+                    # }
+
+                    # results_json['experiment'].append(experiment)
+
+                    # model.save(f"{name}_epoch_{epoch}_batch_size_{batch_size}_duration_{duration}_freqaug.h5")
+                    # time aug
+                    
+                    print("time_aug")
+
+                    train_gen = AudioDataTrainGenerator(train_data, train_labels, train_idx, batch_size=batch_size, duration=duration, time_augment=True, freq_augment=False)
                     val_gen = AudioDataTestGenerator(test_data, test_labels, val_idx, batch_size=batch_size, duration=duration)
                     model = model_function(duration=duration)
                     history = model.fit(train_gen, validation_data=val_gen, epochs=epoch, verbose=1, shuffle=False)
@@ -74,6 +126,8 @@ if __name__ == '__main__':
                         "number_of_epochs": epoch,
                         "batch_size": batch_size,
                         "duration": duration,
+                        "time_augment": "True",
+                        "freq_augment": "False",
                         "train_accuracy": history.history['accuracy'],
                         "test_accuracy": history.history['val_accuracy'],
                         "train_loss": history.history['loss'],
@@ -82,7 +136,34 @@ if __name__ == '__main__':
 
                     results_json['experiment'].append(experiment)
 
-                    model.save(f"{name}_epoch_{epoch}_batch_size_{batch_size}_duration_{duration}.h5")
+                    model.save(f"{name}_epoch_{epoch}_batch_size_{batch_size}_duration_{duration}_timeaug.h5")
+                    # both aug
+
+                    # print("both_aug")
+
+                    # train_gen = AudioDataTrainGenerator(train_data, train_labels, train_idx, batch_size=batch_size, duration=duration, time_augment=True, freq_augment=True)
+                    # val_gen = AudioDataTestGenerator(test_data, test_labels, val_idx, batch_size=batch_size, duration=duration)
+                    # model = model_function(duration=duration)
+                    # history = model.fit(train_gen, validation_data=val_gen, epochs=epoch, verbose=1, shuffle=False)
+
+                    # experiment = {
+                    #     "model_name": name,
+                    #     "number_of_epochs": epoch,
+                    #     "batch_size": batch_size,
+                    #     "duration": duration,
+                    #     "time_augment": "True",
+                    #     "freq_augment": "True",
+                    #     "train_accuracy": history.history['accuracy'],
+                    #     "test_accuracy": history.history['val_accuracy'],
+                    #     "train_loss": history.history['loss'],
+                    #     "test_loss": history.history['val_loss']
+                    # }
+
+                    # results_json['experiment'].append(experiment)
+
+                    # model.save(f"{name}_epoch_{epoch}_batch_size_{batch_size}_duration_{duration}_bothaug.h5")
+
+                    
 
     json_object = json.dumps(results_json, indent=4)
 
