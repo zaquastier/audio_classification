@@ -15,6 +15,11 @@ def open_file(path, sr=SR, duration=DURATION):
 
     return x
 
+def mel_spectrogram(sig, sr=SR):
+    S = librosa.feature.melspectrogram(y=sig, sr=sr, n_fft=N_FFT, n_mels=N_MELS)
+    S_dB = librosa.power_to_db(S, ref=np.max)
+    return S_dB
+
 def time_augmentation(x, duration):
     n_augmentations = np.random.randint(0, 3)
     augmentation_funs = [add_white_noise, shift_signal, pitch_shift]#time_stretch, pitch_shift]
@@ -24,10 +29,6 @@ def time_augmentation(x, duration):
     return aug_sig
 
 
-def mel_spectrogram(sig, sr=SR):
-    S = librosa.feature.melspectrogram(y=sig, sr=sr, n_fft=N_FFT, n_mels=N_MELS)
-    S_dB = librosa.power_to_db(S, ref=np.max)
-    return S_dB
 
 def add_white_noise(sig, amplitude=0.05, duration=DURATION):
     noise = np.random.normal(0, np.std(sig), sig.size) * amplitude
@@ -50,6 +51,7 @@ def time_stretch(sig, rate=None, sr=SR, duration=DURATION):
 
     return str_sig
 
+## too much RAM, I think it's a librosa issue
 def pitch_shift(sig, semitones=None, sr=SR, duration=DURATION):
     if(semitones):
         ptch_sig = librosa.effects.pitch_shift(sig, sr=sr, n_steps=semitones)
@@ -63,29 +65,30 @@ def pitch_shift(sig, semitones=None, sr=SR, duration=DURATION):
 
     return ptch_sig
 
-def frequency_augmentation(x):
-    x = freq_mask(x, 0.1, 2)
-    # x = time_mask(x, 0.1, 2)
-
+def frequency_augmentation(x, max_bandwitdth_pct, max_duration_pct, freq_masks, time_masks, value=-1):
+    x = freq_mask(x, max_bandwitdth_pct, freq_masks, value)
+    x = time_mask(x, max_duration_pct, time_masks, value)
     return x
-def freq_mask(spec, max_bandwidth_pct, num_masks):
+
+def freq_mask(spec, max_bandwidth_pct, num_masks, value):
     n_mels = spec.shape[0]
-    value = spec.mean()
+    value = spec.mean() if value == -1 else value
     aug_spec = np.copy(spec)
     for _ in range(num_masks):
-        bandwidth = np.random.randint(0, max_bandwidth_pct * n_mels)
-        offset = np.random.randint(0, n_mels - bandwidth)
-        aug_spec[:][offset:offset+bandwidth] = value
+        bandwidth = np.random.randint(1, max_bandwidth_pct * n_mels)
+        offset = np.random.randint(0, n_mels - bandwidth) # can overlap, doesn't matter cause random
+        print(bandwidth, offset)
+        aug_spec[offset:offset+bandwidth, :] = value
     return aug_spec
 
-def time_mask(spec, max_duration_pct, num_masks):
+def time_mask(spec, max_duration_pct, num_masks, value):
     n_samples = spec.shape[1]
-    value = spec.mean()
+    value = spec.mean() if value == -1 else value
     aug_spec = np.copy(spec)
     for _ in range(num_masks):
         duration = np.random.randint(0, max_duration_pct * n_samples)
         offset = np.random.randint(0, n_samples - duration)
-        aug_spec[:][offset:offset+duration] = value
+        aug_spec[:,offset:offset+duration]  = value
     return aug_spec
 
 from pathlib import Path
@@ -95,11 +98,10 @@ if __name__ == '__main__':
     sig = open_file(filepath, duration=3)
     aug_sig = time_stretch(sig)
     mel = mel_spectrogram(sig)
-    aug_mel = frequency_augmentation(mel)
+    aug_mel = frequency_augmentation(mel, 0.1, 0.5, 4, 1)
     fig, axs = plt.subplots(2, 2, figsize=(15, 10))
     librosa.display.specshow(mel, x_axis='time', y_axis='mel', ax=axs[0,0])
     librosa.display.specshow(aug_mel, x_axis='time', y_axis='mel', ax=axs[0,1])
     axs[1,0].plot(sig)
     axs[1,1].plot(aug_sig)
     plt.show()
-
