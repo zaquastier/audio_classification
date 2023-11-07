@@ -76,8 +76,48 @@ python download.py
 ### Run the main script to train the models(this will be updated as the project progresses):
 
 ```
-python main.py
+python train.py --model <model_names> --batch_size <size> --number_of_epochs <epochs> --duration <durations>
 ```
+
+**Parameters**
+
+* --model: Specify the model (e.g., model_1,model_2).
+* --batch_size: Set the batch size for training (e.g., 8, 64).
+* --number_of_epochs: Define how many epochs the training should run (e.g., 5, 10, 15).
+* --duration: Set the duration of audio samples in minutes(e.g., 0.5, 2, 3).
+
+You can specify multiple values for each parameter by separating them with commas, allowing you to train the model multiple times with different configurations."
+
+**Optional Flags**
+
+* --output: Name of the output file with training results (parameters, accuracy, loss) 
+
+You can also include optional flags for data augmentation:
+
+* --no_aug: Run training without any data augmentation.
+* --time_aug: Apply time-based data augmentation.
+* --freq_aug: Apply frequency-based data augmentation.
+* --both_aug: Apply both time and frequency data augmentation.
+* --all: Include all augmentation options.
+
+**Example**
+
+```
+python train.py --model model_1,model_2 --batch_size 8 --number_of_epochs 15 --duration 0.5,3 --no_aug --freq_aug
+```
+
+This will train the following:
+
+* Model: model_1, Batch Size: 8, Number of epochs: 15, Duration of audio sample: 0.5 minutes, no data augmentation 
+* Model: model_1, Batch Size: 8, Number of epochs: 15, Duration of audio sample: 0.5 minutes, frequency data augmentation 
+* Model: model_1, Batch Size: 8, Number of epochs: 15, Duration of audio sample: 3 minutes, no data augmentation 
+* Model: model_1, Batch Size: 8, Number of epochs: 15, Duration of audio sample: 3 minutes, frequency data augmentation 
+* Model: model_2, Batch Size: 8, Number of epochs: 15, Duration of audio sample: 0.5 minutes, no data augmentation 
+* Model: model_2, Batch Size: 8, Number of epochs: 15, Duration of audio sample: 0.5 minutes, frequency data augmentation 
+* Model: model_2, Batch Size: 8, Number of epochs: 15, Duration of audio sample: 3 minutes, no data augmentation 
+* Model: model_2, Batch Size: 8, Number of epochs: 15, Duration of audio sample: 3 minutes, frequency data augmentation 
+
+
 
 ## Results
 

@@ -11,7 +11,14 @@ import json
 from datetime import datetime
 
 
-available_models = {'model_1': create_cnn_model_v1, 'model_2': create_cnn_model_v2}
+available_models = {
+    'model_0': create_cnn_model_v0, 
+    'model_1': create_cnn_model_v1, 
+    'model_2': create_cnn_model_v2, 
+    'model_3': create_cnn_model_v3,
+    'model_4': create_cnn_model_v4,
+    'model_5': create_cnn_model_v5
+}
 
 if __name__ == '__main__':
     
@@ -22,6 +29,15 @@ if __name__ == '__main__':
     parser.add_argument('--batch_size', type=str, required=True, help='Batch size to train model.')
     parser.add_argument('--duration', type=str, required=True, help='Duration of audio files (files are 4 minutes max).')
     parser.add_argument('--number_of_epochs', type=str, required=True, help='Number of epochs.')
+
+    parser.add_argument('--no_aug', action='store_true', help='Train without data augmentation.')
+    parser.add_argument('--freq_aug', action='store_true', help='Train with data augmentation on spectrogram.')
+    parser.add_argument('--time_aug', action='store_true', help='Train with data augmentation on raw wave.')
+    parser.add_argument('--both_aug', action='store_true', help='Train on both data augmentation techniques.')
+    parser.add_argument('--all', action='store_true', help='Train with and without data augmentation.')
+
+    parser.add_argument('--output', type=str, help='Name of the output file.')
+
 
     args = parser.parse_args()
 
@@ -52,8 +68,17 @@ if __name__ == '__main__':
 
     results_json = {"experiment": []}
 
+    # Define augmentation configurations
+    augment_configs = [
+        {'time_augment': False, 'freq_augment': False, 'suffix': 'no_aug'},
+        {'time_augment': True, 'freq_augment': False, 'suffix': 'time_aug'},
+        {'time_augment': False, 'freq_augment': True, 'suffix': 'freq_aug'},
+        {'time_augment': True, 'freq_augment': True, 'suffix': 'both_aug'},
+    ]
+
+    # Loop over models, epochs, batch sizes, and durations
     for name, model_function in models.items():
-        print(f"Trainig {name}")
+        print(f"Training {name}")
 
         for epoch in number_of_epochs:
             print(f"Number of epochs: {epoch}")
@@ -64,111 +89,58 @@ if __name__ == '__main__':
                 for duration in tqdm(durations):
                     print(f"\nFile duration: {duration}")
 
-                    # # no aug
-                    # print("no aug")
+                    # Loop over augmentation configurations
+                    for aug_config in augment_configs:
+                        # Check if the current configuration should be trained
+                        if args.all or getattr(args, aug_config['suffix']):
+                            print(aug_config['suffix'])
 
-                    # train_gen = AudioDataTrainGenerator(train_data, train_labels, train_idx, batch_size=batch_size, duration=duration, time_augment=False, freq_augment=False)
-                    # val_gen = AudioDataTestGenerator(test_data, test_labels, val_idx, batch_size=batch_size, duration=duration)
-                    # model = model_function(duration=duration)
-                    # history = model.fit(train_gen, validation_data=val_gen, epochs=epoch, verbose=1, shuffle=False)
+                            # Set up generators with the current augmentation configuration
+                            train_gen = AudioDataTrainGenerator(
+                                train_data, train_labels, train_idx, batch_size=batch_size,
+                                duration=duration, time_augment=aug_config['time_augment'],
+                                freq_augment=aug_config['freq_augment']
+                            )
+                            val_gen = AudioDataTestGenerator(
+                                test_data, test_labels, val_idx, batch_size=batch_size,
+                                duration=duration
+                            )
 
-                    # experiment = {
-                    #     "model_name": name,
-                    #     "number_of_epochs": epoch,
-                    #     "batch_size": batch_size,
-                    #     "duration": duration,
-                    #     "time_augment": "False",
-                    #     "freq_augment": "False",
-                    #     "train_accuracy": history.history['accuracy'],
-                    #     "test_accuracy": history.history['val_accuracy'],
-                    #     "train_loss": history.history['loss'],
-                    #     "test_loss": history.history['val_loss']
-                    # }
+                            # Initialize and train the model
+                            model = model_function(duration=duration)
+                            history = model.fit(
+                                train_gen, validation_data=val_gen, epochs=epoch,
+                                verbose=1, shuffle=False
+                            )
 
-                    # results_json['experiment'].append(experiment)
+                            # Save experiment results
+                            experiment = {
+                                "model_name": name,
+                                "number_of_epochs": epoch,
+                                "batch_size": batch_size,
+                                "duration": duration,
+                                "time_augment": str(aug_config['time_augment']),
+                                "freq_augment": str(aug_config['freq_augment']),
+                                "train_accuracy": history.history['accuracy'],
+                                "test_accuracy": history.history['val_accuracy'],
+                                "train_loss": history.history['loss'],
+                                "test_loss": history.history['val_loss']
+                            }
+                            results_json['experiment'].append(experiment)
 
-                    # model.save(f"{name}_epoch_{epoch}_batch_size_{batch_size}_duration_{duration}.h5")
-
-                    # # freq aug
-                    # print("freq_aug")
-                    # train_gen = AudioDataTrainGenerator(train_data, train_labels, train_idx, batch_size=batch_size, duration=duration, time_augment=False, freq_augment=True)
-                    # val_gen = AudioDataTestGenerator(test_data, test_labels, val_idx, batch_size=batch_size, duration=duration)
-                    # model = model_function(duration=duration)
-                    # history = model.fit(train_gen, validation_data=val_gen, epochs=epoch, verbose=1, shuffle=False)
-
-                    # experiment = {
-                    #     "model_name": name,
-                    #     "number_of_epochs": epoch,
-                    #     "batch_size": batch_size,
-                    #     "duration": duration,
-                    #     "time_augment": "False",
-                    #     "freq_augment": "True",
-                    #     "train_accuracy": history.history['accuracy'],
-                    #     "test_accuracy": history.history['val_accuracy'],
-                    #     "train_loss": history.history['loss'],
-                    #     "test_loss": history.history['val_loss']
-                    # }
-
-                    # results_json['experiment'].append(experiment)
-
-                    # model.save(f"{name}_epoch_{epoch}_batch_size_{batch_size}_duration_{duration}_freqaug.h5")
-                    # time aug
-                    
-                    print("time_aug")
-
-                    train_gen = AudioDataTrainGenerator(train_data, train_labels, train_idx, batch_size=batch_size, duration=duration, time_augment=True, freq_augment=False)
-                    val_gen = AudioDataTestGenerator(test_data, test_labels, val_idx, batch_size=batch_size, duration=duration)
-                    model = model_function(duration=duration)
-                    history = model.fit(train_gen, validation_data=val_gen, epochs=epoch, verbose=1, shuffle=False)
-
-                    experiment = {
-                        "model_name": name,
-                        "number_of_epochs": epoch,
-                        "batch_size": batch_size,
-                        "duration": duration,
-                        "time_augment": "True",
-                        "freq_augment": "False",
-                        "train_accuracy": history.history['accuracy'],
-                        "test_accuracy": history.history['val_accuracy'],
-                        "train_loss": history.history['loss'],
-                        "test_loss": history.history['val_loss']
-                    }
-
-                    results_json['experiment'].append(experiment)
-
-                    model.save(f"{name}_epoch_{epoch}_batch_size_{batch_size}_duration_{duration}_timeaug.h5")
-                    # both aug
-
-                    # print("both_aug")
-
-                    # train_gen = AudioDataTrainGenerator(train_data, train_labels, train_idx, batch_size=batch_size, duration=duration, time_augment=True, freq_augment=True)
-                    # val_gen = AudioDataTestGenerator(test_data, test_labels, val_idx, batch_size=batch_size, duration=duration)
-                    # model = model_function(duration=duration)
-                    # history = model.fit(train_gen, validation_data=val_gen, epochs=epoch, verbose=1, shuffle=False)
-
-                    # experiment = {
-                    #     "model_name": name,
-                    #     "number_of_epochs": epoch,
-                    #     "batch_size": batch_size,
-                    #     "duration": duration,
-                    #     "time_augment": "True",
-                    #     "freq_augment": "True",
-                    #     "train_accuracy": history.history['accuracy'],
-                    #     "test_accuracy": history.history['val_accuracy'],
-                    #     "train_loss": history.history['loss'],
-                    #     "test_loss": history.history['val_loss']
-                    # }
-
-                    # results_json['experiment'].append(experiment)
-
-                    # model.save(f"{name}_epoch_{epoch}_batch_size_{batch_size}_duration_{duration}_bothaug.h5")
-
-                    
+                            # Save the model
+                            model_filename = f"{name}_epoch_{epoch}_batch_size_{batch_size}_duration_{duration}_{aug_config['suffix']}.keras"
+                            model.save(model_filename)
+           
 
     json_object = json.dumps(results_json, indent=4)
 
-    timestamp = datetime.now().strftime('%Y%m%d')
+    if args.output:
+        with open(args.output, "w") as res:
+            res.write(json_object)       
+    else:
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M')
 
-    with open(f"results_{timestamp}.json", "w") as res:
-        res.write(json_object)
+        with open(f"results_{timestamp}.json", "w") as res:
+            res.write(json_object)
         
