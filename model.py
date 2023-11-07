@@ -71,3 +71,98 @@ def create_cnn_model_v2(num_classes=10, duration=DURATION):
     model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
     
     return model
+
+def create_cnn_model_v3(num_classes=10, duration=DURATION):
+    sgram_shape=[N_MELS, int(duration*SR) // HOP_LENGTH + 1]
+    model = keras.Sequential()
+    model.add(keras.layers.Conv2D(32, (5, 5), input_shape=(sgram_shape[0], sgram_shape[1], 1), activation='ReLU'))
+    model.add(keras.layers.Conv2D(32, (5, 5), activation='ReLU'))
+    model.add(keras.layers.MaxPool2D(pool_size=(2,2)))
+    model.add(keras.layers.Conv2D(16, (4, 4), activation='ReLU'))
+    model.add(keras.layers.Conv2D(16, (4, 4), activation='ReLU'))
+    model.add(keras.layers.MaxPool2D(pool_size=(2,2)))
+    model.add(keras.layers.Flatten())
+    model.add(keras.layers.Dense(256, activation='ReLU'))
+    model.add(keras.layers.Dense(256, activation='ReLU'))
+    model.add(keras.layers.Dropout(0.5))
+    model.add(keras.layers.Dense(256, activation='ReLU'))
+    model.add(keras.layers.Dense(256, activation='ReLU'))
+    model.add(keras.layers.Dropout(0.5))
+    model.add(keras.layers.Dense(num_classes, activation='softmax'))
+
+    optimizer = keras.optimizers.Adam(learning_rate=0.001)
+    model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
+    
+    return model
+def create_cnn_model_v4(num_classes=10, duration=DURATION): # model 3 with more regularization
+    sgram_shape=[N_MELS, int(duration*SR) // HOP_LENGTH + 1]
+    model = keras.Sequential()
+    model.add(keras.layers.Conv2D(32, (5, 5), input_shape=(sgram_shape[0], sgram_shape[1], 1), activation='ReLU'))
+    model.add(keras.layers.Conv2D(32, (5, 5), activation='ReLU'))
+    model.add(keras.layers.MaxPool2D(pool_size=(2,2)))
+    model.add(keras.layers.Dropout(0.5))
+    model.add(keras.layers.Conv2D(16, (4, 4), activation='ReLU'))
+    model.add(keras.layers.Conv2D(16, (4, 4), activation='ReLU'))
+    model.add(keras.layers.MaxPool2D(pool_size=(2,2)))
+    model.add(keras.layers.Dropout(0.5))
+    model.add(keras.layers.Flatten())
+    model.add(keras.layers.Dense(256, activation='ReLU'))
+    model.add(keras.layers.Dense(256, activation='ReLU'))
+    model.add(keras.layers.Dropout(0.5))
+    model.add(keras.layers.Dense(256, activation='ReLU'))
+    model.add(keras.layers.Dense(256, activation='ReLU'))
+    model.add(keras.layers.Dropout(0.5))
+    model.add(keras.layers.Dense(num_classes, activation='softmax'))
+
+    optimizer = keras.optimizers.Adam(learning_rate=0.001)
+    model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
+    
+    return model
+
+def create_cnn_model_v5(num_classes=10, duration=DURATION):
+    sgram_shape=[N_MELS, int(duration*SR) // HOP_LENGTH + 1]
+    model = keras.Sequential()
+
+    # Conv block 1
+    model.add(keras.layers.Conv2D(32, (5, 5), input_shape=(sgram_shape[0], sgram_shape[1], 1), activation='ReLU'))
+    model.add(keras.layers.Conv2D(32, (5, 5)))
+    model.add(keras.layers.BatchNormalization())
+    model.add(keras.layers.Activation('relu'))
+    model.add(keras.layers.Dropout(0.5))
+    model.add(keras.layers.MaxPool2D(pool_size=(2,2)))
+
+    # Conv block 2
+    model.add(keras.layers.Conv2D(16, (5, 5), activation='ReLU'))
+    model.add(keras.layers.Conv2D(16, (5, 5)))
+    model.add(keras.layers.BatchNormalization())
+    model.add(keras.layers.Activation('relu'))
+    model.add(keras.layers.Dropout(0.5))
+    model.add(keras.layers.MaxPool2D(pool_size=(2,2)))
+
+    # MLP
+    model.add(keras.layers.Flatten())
+
+    model.add(keras.layers.Dense(256))
+    model.add(keras.layers.BatchNormalization())
+    model.add(keras.layers.Activation('relu'))
+
+    model.add(keras.layers.Dense(256))
+    model.add(keras.layers.BatchNormalization())
+    model.add(keras.layers.Activation('relu'))
+    model.add(keras.layers.Dropout(0.5))
+
+    model.add(keras.layers.Dense(256))
+    model.add(keras.layers.BatchNormalization())
+    model.add(keras.layers.Activation('relu'))
+
+    model.add(keras.layers.Dense(256))
+    model.add(keras.layers.BatchNormalization())
+    model.add(keras.layers.Activation('relu'))
+    model.add(keras.layers.Dropout(0.5))
+
+    model.add(keras.layers.Dense(num_classes, activation='softmax'))
+
+    optimizer = keras.optimizers.Adam(learning_rate=0.001)
+    model.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
+    
+    return model
