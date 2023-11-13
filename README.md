@@ -118,8 +118,31 @@ This will train the following:
 * Model: model_2, Batch Size: 8, Number of epochs: 15, Duration of audio sample: 3 minutes, frequency data augmentation 
 
 
+## Model Architectures
 
-## Results
+TODO: Describe model architectures
 
-TODO
+## Results and Analysis
+
+The following table shows the top 10 models for test accuracy.
+
+Top 10 models based on Test Accuracy:
+| model_name   |   number_of_epochs |   batch_size |   duration | time_augment   | freq_augment   |   train_accuracy |   test_accuracy |   train_loss |   test_loss |
+|:-------------|-------------------:|-------------:|-----------:|:---------------|:---------------|-----------------:|----------------:|-------------:|------------:|
+| model_6      |                 10 |           64 |          3 | False          | False          |         0.883178 |        0.805953 |     0.364478 |    0.737663 |
+| model_6      |                 10 |           64 |          1 | False          | False          |         0.831496 |        0.771608 |     0.541975 |    0.780939 |
+| model_3      |                 10 |           64 |          3 | False          | False          |         0.820759 |        0.736119 |     0.545594 |    1.04135  |
+| model_6      |                 10 |            8 |          1 | False          | False          |         0.826485 |        0.723526 |     0.586806 |    1.00673  |
+| model_6      |                 10 |           64 |          3 | True           | False          |         0.576521 |        0.71494  |     1.24043  |    0.852548 |
+| model_6      |                 10 |            8 |          3 | False          | False          |         0.871296 |        0.713795 |     0.448825 |    1.21069  |
+| model_6      |                 10 |           64 |          1 | True           | False          |         0.575376 |        0.694333 |     1.27754  |    0.967814 |
+| model_6      |                 10 |            8 |          3 | True           | False          |         0.63078  |        0.688609 |     1.13875  |    1.04009  |
+| model_3      |                 10 |           64 |          3 | True           | True           |         0.541016 |        0.685175 |     1.30728  |    0.932843 |
+| model_3      |                 10 |           64 |          1 | False          | False          |         0.78912  |        0.683457 |     0.621747 |    1.11221  |
+
+We notice that model 6 gets better results by leveraging the use of residual networks. We also note that in the top 10, most models use a batch size of 64 and a duration of 3 minutes. 
+
+However, time and frequency augmentation techniques performed worse than regular training. We should explore training on more epochs.
+
+TODO: train on more epochs, maybe just for model 6
 

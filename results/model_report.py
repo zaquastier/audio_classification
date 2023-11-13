@@ -16,4 +16,4 @@ print("\n--------------------------------------------------\n")
 
 # Display the top 10 models based on test accuracy
 print("Top 10 models based on Test Accuracy:")
-print(df.nlargest(10, 'test_accuracy'))
+print(df.nlargest(10, 'test_accuracy').to_markdown())
