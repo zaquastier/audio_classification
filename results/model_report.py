@@ -6,7 +6,7 @@ pd.set_option('display.width', None)        # Ensure that all columns fit in the
 pd.set_option('display.max_colwidth', None)
 
 # Read the CSV file into a Pandas DataFrame
-df = pd.read_csv('results/experiment_20231026.csv')
+df = pd.read_csv('results/parameter_testing.csv')
 
 # Display the top 10 models based on train accuracy
 print("Top 10 models based on Train Accuracy:")

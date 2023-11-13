@@ -65,7 +65,7 @@ def pitch_shift(sig, semitones=None, sr=SR, duration=DURATION):
 
     return ptch_sig
 
-def frequency_augmentation(x, max_bandwitdth_pct, max_duration_pct, freq_masks, time_masks, value=-1):
+def frequency_augmentation(x, max_bandwitdth_pct=0.1, max_duration_pct=0.1, freq_masks=2, time_masks=2, value=-1):
     x = freq_mask(x, max_bandwitdth_pct, freq_masks, value)
     x = time_mask(x, max_duration_pct, time_masks, value)
     return x
@@ -77,7 +77,6 @@ def freq_mask(spec, max_bandwidth_pct, num_masks, value):
     for _ in range(num_masks):
         bandwidth = np.random.randint(1, max_bandwidth_pct * n_mels)
         offset = np.random.randint(0, n_mels - bandwidth) # can overlap, doesn't matter cause random
-        print(bandwidth, offset)
         aug_spec[offset:offset+bandwidth, :] = value
     return aug_spec
 

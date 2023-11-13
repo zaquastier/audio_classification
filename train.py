@@ -7,17 +7,21 @@ import os
 from sklearn.model_selection import train_test_split
 from tqdm import tqdm 
 import argparse
+import time
 import json
 from datetime import datetime
 
 
 available_models = {
+    'model_test': create_cnn_model_test,
     'model_0': create_cnn_model_v0, 
     'model_1': create_cnn_model_v1, 
     'model_2': create_cnn_model_v2, 
     'model_3': create_cnn_model_v3,
     'model_4': create_cnn_model_v4,
-    'model_5': create_cnn_model_v5
+    'model_5': create_cnn_model_v5,
+    'model_6': create_cnn_model_v6,
+    'model_7': create_cnn_model_v7
 }
 
 if __name__ == '__main__':
@@ -95,6 +99,8 @@ if __name__ == '__main__':
                         if args.all or getattr(args, aug_config['suffix']):
                             print(aug_config['suffix'])
 
+                            start_time = time.time()
+
                             # Set up generators with the current augmentation configuration
                             train_gen = AudioDataTrainGenerator(
                                 train_data, train_labels, train_idx, batch_size=batch_size,
@@ -113,6 +119,8 @@ if __name__ == '__main__':
                                 verbose=1, shuffle=False
                             )
 
+                            total_time = time.time() - start_time
+
                             # Save experiment results
                             experiment = {
                                 "model_name": name,
@@ -121,6 +129,7 @@ if __name__ == '__main__':
                                 "duration": duration,
                                 "time_augment": str(aug_config['time_augment']),
                                 "freq_augment": str(aug_config['freq_augment']),
+                                "training_duration": total_time,
                                 "train_accuracy": history.history['accuracy'],
                                 "test_accuracy": history.history['val_accuracy'],
                                 "train_loss": history.history['loss'],
