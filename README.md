@@ -148,6 +148,6 @@ However, time and frequency augmentation techniques performed worse than regular
 
 We train now model 6 on 30 epochs, for a batch size of 64 and a duration of audio samples of 3 minutes. Let's visualize accuracy and loss for both training and testing.
 
-![results model 6 30 epochs]('results/model_6_30_epochs.png')
+![results model 6 30 epochs](./results/model_6_30_epochs.png)
 
 We see that data augmentation techniques do not improve our model performance. This is problematic and we should train again by modifying other hyperparameters (mel spectrogram parameters, learning rate, etc.).
