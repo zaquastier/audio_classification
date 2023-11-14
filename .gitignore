@@ -2,6 +2,7 @@
 
 UrbanSound8K/
 models/
+saved_models/
 .venv/
 __pycache__/
 test_files/
